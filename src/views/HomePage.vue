@@ -5,15 +5,22 @@ import TaskPage from '../components/TaskPage.vue';
 const state = reactive({
     task: '',
     tasks: [],
-    renderTasks: false
+    renderTasks: false,
+    hasTask: true
 })
 
-const handleRenderTasks = ()=> state.renderTasks = state.tasks.length > 0
+const renderList = ()=> state.renderTasks = state.tasks.length > 0
 
 function handleAddTask(){
-    state.tasks.push(state.task)
-    state.task = ''
-    handleRenderTasks()
+    if (state.task.trim() !== '') {
+        state.tasks.push(state.task)
+        state.task = ''
+        renderList()
+        state.hasTask = true
+        
+    }else{
+        state.hasTask = false
+    }
 }
 
 const deleteTask = (index)=>{
@@ -28,9 +35,12 @@ const deleteTask = (index)=>{
     <form>
         <div class="container-content">
             <input v-model="state.task" type="text" class="container-content-input">
-            <button @click.prevent="handleAddTask" :class="active" type="button">+</button>
+            <button @click.prevent="handleAddTask" :class="active" type="button">
+                <span class="material-symbols-outlined">add</span>
+            </button>
         </div>
     </form>
+    <p v-if="state.hasTask === false"> Please, enter a task!</p>
         <ul class="task-list" v-if="state.renderTasks">
             <TaskPage :tasks-list="state.tasks" :task-item="state.task" @delete-task="deleteTask()"/>
         </ul>
@@ -44,7 +54,7 @@ const deleteTask = (index)=>{
     flex-flow: column nowrap
     margin: auto
     max-width: 70%
-    height: 500px
+    height: 100vh
     border-radius: 12px
     border: 1px solid rgba(209, 213, 219, 0.3)
     backdrop-filter: blur(16px) saturate(180%)
@@ -77,8 +87,5 @@ const deleteTask = (index)=>{
 .task-list
     list-style-type: none
     padding: 10px
-
-
-
 
 </style>
