@@ -56,15 +56,16 @@ const deleteTask = (index)=>{
     max-width: 70%
     height: 100vh
     border-radius: 12px
-    border: 1px solid rgba(209, 213, 219, 0.3)
+    border: 1px solid #ffffff55
     backdrop-filter: blur(16px) saturate(180%)
-    background-color: rgba(255, 255, 255, 0.4)
+    background-color: #ffffff66
     overflow: hidden
     
     &-content
         display: flex
         justify-content: center
         align-self: center
+        gap: 12px
         margin: 20px 0
         width: 400px
         height: 50px
@@ -73,16 +74,27 @@ const deleteTask = (index)=>{
             height: 100%
             border: none
             border-bottom: 1px solid #fff
+            padding-left: 5px
             font-size: 20px
-            background-color: rgba(255, 255, 255, 0.2)
+            background-color: #ffffff33
+            &:focus-visible
+                border: none
+                outline: 1px solid #fff
     button
         width: 10%
         height: 100%
-        flex-shrink: 0
         border: none
         font-size: 34px
         cursor: pointer
         color: #ff1493
+        border-bottom: 1px solid #fff
+        background-color: #ffffff33
+        &:hover
+            border-left: none
+            border: 2px solid #fff
+            opacity: 0.5
+                
+            
 
 .task-list
     list-style-type: none

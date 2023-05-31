@@ -1,11 +1,9 @@
 <script setup>
-import {reactive} from 'vue'
 
 defineProps({
     taskItem: String,
     tasksList: Array
-}
-)
+})
 
 defineEmits(['deleteTask'])
 
