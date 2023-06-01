@@ -6,7 +6,7 @@ const state = reactive({
     task: '',
     tasks: [],
     renderTasks: false,
-    hasTask: true
+    hasTask: true,
 })
 
 const renderList = ()=> state.renderTasks = state.tasks.length > 0
@@ -34,15 +34,15 @@ const deleteTask = (index)=>{
     <h1>Todo List</h1>
     <form>
         <div class="container-content">
-            <input v-model="state.task" type="text" class="container-content-input">
-            <button @click.prevent="handleAddTask" :class="active" type="button">
-                <span class="material-symbols-outlined">add</span>
+            <input v-model="state.task" type="text" class="container-content-input" @keypress.enter.prevent="handleAddTask" :class="{rotate: state.animationIsActive}">
+            <button @click.prevent="handleAddTask" type="button">
+                <span class="material-symbols-outlined rotate">add</span>
             </button>
         </div>
     </form>
     <p v-if="state.hasTask === false"> Please, enter a task!</p>
         <ul class="task-list" v-if="state.renderTasks">
-            <TaskPage :tasks-list="state.tasks" :task-item="state.task" @delete-task="deleteTask()"/>
+                <TaskPage :tasks-list="state.tasks" :task-item="state.task" @delete-task="deleteTask()"/>
         </ul>
 </div>
 </template>
@@ -93,9 +93,6 @@ const deleteTask = (index)=>{
             border-left: none
             border: 2px solid #fff
             opacity: 0.5
-                
-            
-
 .task-list
     list-style-type: none
     padding: 10px
