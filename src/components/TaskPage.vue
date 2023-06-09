@@ -6,7 +6,6 @@ defineProps({
 });
 
 const labelRef = ref(null);
-const contentIsEditable = true;
 
 const focusLabel= () => {
     labelRef.value.focus();
@@ -17,7 +16,7 @@ const focusLabel= () => {
 <li class="task-item">
     <input type="checkbox" id="checkbox" class="task-item-check" v-model="task.complete" @change="handleTaskCompleted, $emit('addCompleteTask')"/>
         <label class="task-item-label"
-        contenteditable="true" 
+        :contenteditable="task.contentIsEditable" 
         ref="labelRef"
         :class="{ 'task-item-completed':task.complete }">
          {{task.name}} 
@@ -26,7 +25,7 @@ const focusLabel= () => {
         <button @click="$emit('deleteTask')" >
             <span class="material-symbols-outlined">delete</span>
         </button>
-        <button>
+        <button v-show="task.contentIsEditable">
             <span class="material-symbols-outlined" @click.prevent="focusLabel">edit</span>
         </button>
     </div> 

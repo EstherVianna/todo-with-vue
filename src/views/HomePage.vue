@@ -14,24 +14,24 @@ const handleAddTask = ()=>{
     if (state.task.trim() !== '') {
         state.tasks.push({
       name: state.task,
-      complete: false
+      complete: false,
+      contentIsEditable: true
     });
     state.task = ''
     state.hasTask = true
     ++state.totalTasks
-}
-    else{
-        state.hasTask = false
-    }
+    }else{
+            state.hasTask = false
+        }
 }
 
 const handleCompleteTask = (task)=>{
     if(task.complete){
         ++state.completeTasks
-        console.log('funcionando')
-    }
-    else{
-        --state.completeTasks 
+        task.contentIsEditable = false
+    }else{
+        --state.completeTasks
+        task.contentIsEditable = true
     }
 }
 
@@ -46,8 +46,10 @@ const deleteTask = (index)=>{
 <div class="container">
     <div class="header">
         <h1 class="header-title">Todos</h1>
-        <h2 class="header-subtitle" v-if="state.totalTasks > 0"> {{ state.totalTasks }} <span class="header-subtitle-total">Total</span></h2>
-        <h2 class="header-subtitle" v-if="state.completeTasks > 0"> {{ state.completeTasks }} <span class="header-subtitle-total">Complete</span></h2>
+        <div class="header-subtitle">
+            <h2 v-if="state.totalTasks > 0"> {{ state.totalTasks }} <span class="header-subtitle-total">Total</span></h2>
+            <h2 v-if="state.completeTasks > 0"> {{ state.completeTasks }} <span class="header-subtitle-total">Complete</span></h2>
+        </div>
     </div>    
     <form>
         <div class="container-content">
@@ -77,12 +79,12 @@ const deleteTask = (index)=>{
     margin-top: 10px
     &-subtitle
         display: flex
-        flex-flow: row nowrap
+        flex-flow: column nowrap
         width: 100%
         height: 100%
-        font-size: 32px
+        font-size: 20px
         &-total
-            font-size: 16px
+            font-size: 12px
             padding:   15px 0px 0px 4px
 .container
     display: flex
