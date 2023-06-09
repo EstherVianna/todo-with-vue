@@ -1,53 +1,89 @@
 <script setup>
-import {reactive} from 'vue'
+import {reactive, computed} from 'vue'
 import TaskPage from '../components/TaskPage.vue';
 
 const state = reactive({
     task: '',
     tasks: [],
-    renderTasks: false,
     hasTask: true,
+    totalTasks: 0,
+    completeTasks: 0
 })
 
-const renderList = ()=> state.renderTasks = state.tasks.length > 0
-
-function handleAddTask(){
+const handleAddTask = ()=>{
     if (state.task.trim() !== '') {
-        state.tasks.push(state.task)
-        state.task = ''
-        renderList()
-        state.hasTask = true
-        
-    }else{
+        state.tasks.push({
+      name: state.task,
+      complete: false
+    });
+    state.task = ''
+    state.hasTask = true
+    ++state.totalTasks
+}
+    else{
         state.hasTask = false
     }
 }
 
+const handleCompleteTask = (task)=>{
+    if(task.complete){
+        ++state.completeTasks
+        console.log('funcionando')
+    }
+    else{
+        --state.completeTasks 
+    }
+}
+
 const deleteTask = (index)=>{
-    state.tasks.shift(index)
+    state.tasks.splice(index,1)
+    --state.totalTasks
+    --state.completeTasks
 }
 
 </script>
-
 <template>
 <div class="container">
-    <h1>Todo List</h1>
+    <div class="header">
+        <h1 class="header-title">Todos</h1>
+        <h2 class="header-subtitle" v-if="state.totalTasks > 0"> {{ state.totalTasks }} <span class="header-subtitle-total">Total</span></h2>
+        <h2 class="header-subtitle" v-if="state.completeTasks > 0"> {{ state.completeTasks }} <span class="header-subtitle-total">Complete</span></h2>
+    </div>    
     <form>
         <div class="container-content">
-            <input v-model="state.task" type="text" class="container-content-input" @keypress.enter.prevent="handleAddTask" :class="{rotate: state.animationIsActive}">
-            <button @click.prevent="handleAddTask" type="button">
+            <input type="text" class="container-content-input" v-model="state.task" @keypress.enter.prevent="handleAddTask">
+            <button type="button" @click.prevent="handleAddTask">
                 <span class="material-symbols-outlined rotate">add</span>
             </button>
         </div>
     </form>
-    <p v-if="state.hasTask === false"> Please, enter a task!</p>
-        <ul class="task-list" v-if="state.renderTasks">
-                <TaskPage :tasks-list="state.tasks" :task-item="state.task" @delete-task="deleteTask()"/>
-        </ul>
+    <p v-if="!state.hasTask"> Please, enter a task!</p>
+    <ul class="task-list" v-if="state.tasks.length > 0">
+            <TaskPage v-for="task, index in state.tasks" 
+            :key="index" 
+            :task="task" 
+            :tasks-list="state.tasks"
+            @add-complete-task="handleCompleteTask(task)"
+            @delete-task="deleteTask(index)"/>
+    </ul>
 </div>
 </template>
-
 <style scoped lang="sass">
+.header
+    display: flex
+    justify-content: space-evenly
+    gap: 50%
+    width: 40%
+    margin-top: 10px
+    &-subtitle
+        display: flex
+        flex-flow: row nowrap
+        width: 100%
+        height: 100%
+        font-size: 32px
+        &-total
+            font-size: 16px
+            padding:   15px 0px 0px 4px
 .container
     display: flex
     align-items: center
