@@ -5,8 +5,8 @@
 }
 
 body{
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    min-height: 100%;
     background-image: linear-gradient(to left top, #7d306b, #983d6f, #b04c72, #c75e75, #db7178, #e77f77, #f28f77, #fa9f78, #fdad76, #fdbc75, #fbcc78, #f6db7e);
     background-repeat: no-repeat;    
 }

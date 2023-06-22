@@ -1,59 +1,97 @@
 <script setup>
-import {reactive, computed} from 'vue'
+import { reactive, watch, onBeforeMount } from 'vue';
 import TaskPage from '../components/TaskPage.vue';
 
 const state = reactive({
-    task: '',
-    tasks: [],
-    hasTask: true,
-    totalTasks: 0,
-    completeTasks: 0
-})
+  task: "",
+  tasks: [],
+  hasTask: true,
+  totalTasks: 0,
+  completeTasks: 0
+});
 
-const handleAddTask = ()=>{
-    if (state.task.trim() !== '') {
-        state.tasks.push({
-      name: state.task,
+const handleAddTask = () => {
+  if (state.task.trim() !== "") {
+    state.tasks.push({
+      content: state.task,
       complete: false,
-      contentIsEditable: true
+      contentEditable: true
     });
-    state.task = ''
-    state.hasTask = true
-    ++state.totalTasks
-    }else{
-            state.hasTask = false
-        }
-}
+    state.task = "";
+    state.hasTask = true;
+    ++state.totalTasks;
+  } else {
+    state.hasTask = false;
+  }};
 
-const handleCompleteTask = (task)=>{
-    if(task.complete){
-        ++state.completeTasks
-        task.contentIsEditable = false
-    }else{
-        --state.completeTasks
-        task.contentIsEditable = true
-    }
-}
+watch(() => state.tasks, (newTask) => {
+  localStorage.setItem('task', JSON.stringify(newTask))
+}, { deep: true });
 
-const deleteTask = (index)=>{
-    state.tasks.splice(index,1)
+watch(() => state.completeTasks, () => {
+  localStorage.setItem('completeTasks', state.completeTasks)
+});
+
+watch(() => state.totalTasks, () => {
+  localStorage.setItem('totalTasks', state.totalTasks);
+});
+
+const handleCompleteTask = (task) => {
+  task.contentEditable = !task.complete;
+
+  if (task.complete) {
+    ++state.completeTasks;
+  } else {
+    --state.completeTasks;
+  }};
+
+const deleteTask = (index, task) => {
+  state.tasks.splice(index, 1);
+
+  if(task.complete){
+    --state.completeTasks;
+    --state.totalTasks;
+  }else{
     --state.totalTasks
-    --state.completeTasks
-}
+  }};
+
+onBeforeMount(() => {
+  const storedTasks = localStorage.getItem('task');
+  const storedCompleteTasks = localStorage.getItem('completeTasks');
+  const storedTotalTasks = localStorage.getItem('totalTasks');
+
+  if (storedTasks !== null) {
+    state.tasks = JSON.parse(storedTasks)
+    state.completeTasks = parseInt(storedCompleteTasks)
+    if (storedCompleteTasks < 0) {
+      storedCompleteTasks = 0;
+    }
+    state.totalTasks = storedTotalTasks
+  }
+});
 
 </script>
 <template>
 <div class="container">
     <div class="header">
-        <h1 class="header-title">Todos</h1>
+        <h1 class="header-title" >Todos</h1>
         <div class="header-subtitle">
-            <h2 v-if="state.totalTasks > 0"> {{ state.totalTasks }} <span class="header-subtitle-total">Total</span></h2>
-            <h2 v-if="state.completeTasks > 0"> {{ state.completeTasks }} <span class="header-subtitle-total">Complete</span></h2>
+            <h2 class="header-subtitle-task"
+                v-if="state.totalTasks > 0">
+             {{ state.totalTasks }}
+             <span class="header-subtitle-task-num">Total</span></h2>
+            <h2 class="header-subtitle-task"
+                v-if="state.completeTasks > 0">
+            {{ state.completeTasks }}
+            <span class="header-subtitle-task-num">Complete</span></h2>
         </div>
     </div>    
     <form>
         <div class="container-content">
-            <input type="text" class="container-content-input" v-model="state.task" @keypress.enter.prevent="handleAddTask">
+            <input type="text"
+                   class="container-content-input"
+                   v-model="state.task" 
+                   @keypress.enter.prevent="handleAddTask">
             <button type="button" @click.prevent="handleAddTask">
                 <span class="material-symbols-outlined rotate">add</span>
             </button>
@@ -63,10 +101,9 @@ const deleteTask = (index)=>{
     <ul class="task-list" v-if="state.tasks.length > 0">
             <TaskPage v-for="task, index in state.tasks" 
             :key="index" 
-            :task="task" 
-            :tasks-list="state.tasks"
+            :task="task"
             @add-complete-task="handleCompleteTask(task)"
-            @delete-task="deleteTask(index)"/>
+            @delete-task="deleteTask(index, task)"/>
     </ul>
 </div>
 </template>
@@ -79,20 +116,24 @@ const deleteTask = (index)=>{
     margin-top: 10px
     &-subtitle
         display: flex
-        flex-flow: column nowrap
-        width: 100%
-        height: 100%
-        font-size: 20px
-        &-total
-            font-size: 12px
-            padding:   15px 0px 0px 4px
+        flex-flow: row nowrap
+        width: 20%
+        gap: 12px
+        &-task
+            display: flex
+            width: fit-content
+            height: 100%
+            &-num
+                font-size: 12px
+                padding:   10px 0px 0px 4px
 .container
     display: flex
     align-items: center
     flex-flow: column nowrap
     margin: auto
     max-width: 70%
-    height: 100vh
+    min-height: 100vh
+    height: 100%
     border-radius: 12px
     border: 1px solid #ffffff55
     backdrop-filter: blur(16px) saturate(180%)
@@ -134,5 +175,7 @@ const deleteTask = (index)=>{
 .task-list
     list-style-type: none
     padding: 10px
+    display: flex
+    flex-flow: column-reverse wrap
 
 </style>

@@ -2,31 +2,38 @@
 import {ref} from 'vue'
 
 defineProps({
-  task: Object
+  task:{
+    type: Object,
+    required: true
+  }
 });
 
 const labelRef = ref(null);
 
 const focusLabel= () => {
     labelRef.value.focus();
-}
+};
 
 </script>
 <template>
-<li class="task-item">
-    <input type="checkbox" id="checkbox" class="task-item-check" v-model="task.complete" @change="handleTaskCompleted, $emit('addCompleteTask')"/>
-        <label class="task-item-label"
-        :contenteditable="task.contentIsEditable" 
-        ref="labelRef"
-        :class="{ 'task-item-completed':task.complete }">
-         {{task.name}} 
+<li class="task-item" draggable>
+    <input type="checkbox" 
+           class="task-item-check"
+           v-model="task.complete"
+           @change="$emit('add-complete-task', task)" />
+       <label ref="labelRef">
+            <input type="text"
+                   class="task-item-input"
+                   v-model="task.content"
+                   :class="{ 'task-item-completed':task.complete }" />
         </label>
     <div class="task-item-btn">
         <button @click="$emit('deleteTask')" >
             <span class="material-symbols-outlined">delete</span>
         </button>
-        <button v-show="task.contentIsEditable">
-            <span class="material-symbols-outlined" @click.prevent="focusLabel">edit</span>
+        <button v-show="task.contentEditable"
+                @click.prevent="focusLabel">
+            <span class="material-symbols-outlined">edit</span>
         </button>
     </div> 
 </li>
@@ -38,17 +45,16 @@ const focusLabel= () => {
     align-items: center
     justify-content: space-between
     flex-flow: row wrap
-    gap: 50px
+    gap: 10px
     border-radius: 5px
-    margin: 10px 0px
+    margin: 5px 0px
     width: clamp(200px, 400px, 600px)
     font-size: 16px
     background: #30303033
-    label
-        cursor: pointer
-        max-width: 55%
-        height: fit-content
+    &-input
         line-height: 35px
+        background: inherit
+        border: none
         &:focus
             border-radius: 2.5px
             background: #f28f77
@@ -57,8 +63,8 @@ const focusLabel= () => {
     &-check
         margin: 5px
         cursor: pointer
-        &checked > span
-            text-decoration: line-through
+        > span
+                text-decoration: line-through
     &-completed
         text-decoration: line-through
     &-btn
@@ -72,5 +78,4 @@ const focusLabel= () => {
             cursor: pointer
             svg
                 font-size: 12px
-
 </style>
